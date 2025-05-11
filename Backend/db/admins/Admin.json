@@ -1,0 +1,23 @@
+[
+    {
+        "user_id": "user_2wrsXOwHFsmNPnbtaRrHgKb484U",
+        "full_name": "TANISHQ CHOUHAN",
+        "email": "0808cl221140.ies@ipsacademy.org",
+        "role": "HeadAdmin",
+        "created_by": "system",
+        "created_at": "2025-05-09T23:16:07.752585",
+        "clerk_data": {
+            "imageUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yd3JzWE53S09SSWFaZHl0eWp4a0FPZ255c0EifQ",
+            "username": "tanishq",
+            "primaryPhoneNumber": "+918103942742"
+        }
+    },
+    {
+        "user_id": "user_2wczVt5AZztXaHkKhy1egveY80A",
+        "full_name": "Krish",
+        "email": "0808ds221063.ies@ipsacademy.org",
+        "role": "admin",
+        "created_by": "user_2wrsXOwHFsmNPnbtaRrHgKb484U",
+        "created_at": "2025-05-10T02:22:55.725767"
+    }
+]

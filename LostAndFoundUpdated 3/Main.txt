@@ -1,0 +1,232 @@
+@app.post("/upload_lost")
+async def upload_lost_person(
+    name: str = Form(...),
+    gender: str = Form(...),
+    age: int = Form(...),
+    where_lost: str = Form(...),
+    your_name: str = Form(...),
+    relation_with_lost: str = Form(...),
+    user_id: str = Form(...),
+    mobile_no: str = Form(...),
+    email_id: str = Form(...),
+    file: UploadFile = File(...)
+):
+    contents = await file.read()
+    image = cv2.imdecode(np.frombuffer(contents, np.uint8), cv2.IMREAD_COLOR)
+
+    face_id = str(uuid.uuid4())
+    face_path = f"db/lost/{face_id}.jpg"
+    cropped = crop_and_save_face(image, face_path)
+
+    if not cropped:
+        return JSONResponse(status_code=400, content={"error": "No face detected"})
+
+    metadata = {
+        "face_id": face_id,
+        "name": name,
+        "gender": gender,
+        "age": age,
+        "where_lost": where_lost,
+        "your_name": your_name,
+        "relation_with_lost": relation_with_lost,
+        "user_id": user_id,
+        "mobile_no": mobile_no,
+        "email_id": email_id,
+        "face_path": cropped
+    }
+    save_metadata(face_id, metadata, "db/lost")
+
+    matched_found = match_face_with_db(cropped, "db/found", metadata)
+    matched_live = match_face_with_db(cropped, "db/live_feed", metadata)
+
+    return {
+        "message": "Lost person uploaded successfully.",
+        "face_id": face_id,
+        "matched_found_count": len(matched_found),
+        "matched_live_count": len(matched_live),
+        "matched_records": matched_found + matched_live
+    }
+
+
+@app.post("/upload_found")
+async def upload_found_person(
+    name: str = Form(...),
+    gender: str = Form(...),
+    age: int = Form(...),
+    where_found: str = Form(...),
+    your_name: str = Form(...),
+    organization: str = Form(...),
+    designation: str = Form(...),
+    user_id: str = Form(...),
+    mobile_no: str = Form(...),
+    email_id: str = Form(...),
+    file: UploadFile = File(...)
+):
+    contents = await file.read()
+    image = cv2.imdecode(np.frombuffer(contents, np.uint8), cv2.IMREAD_COLOR)
+
+    face_id = str(uuid.uuid4())
+    face_path = f"db/found/{face_id}.jpg"
+    cropped = crop_and_save_face(image, face_path)
+
+    if not cropped:
+        return JSONResponse(status_code=400, content={"error": "No face detected"})
+
+    metadata = {
+        "face_id": face_id,
+        "name": name,
+        "gender": gender,
+        "age": age,
+        "where_found": where_found,
+        "your_name": your_name,
+        "organization": organization,
+        "designation": designation,
+        "user_id": user_id,
+        "mobile_no": mobile_no,
+        "email_id": email_id,
+        "face_path": cropped
+    }
+    save_metadata(face_id, metadata, "db/found")
+
+    matched_lost = match_face_with_db(cropped, "db/lost", metadata)
+
+    return {
+        "message": "Found person uploaded successfully.",
+        "face_id": face_id,
+        "matched_lost_count": len(matched_lost),
+        "matched_records": matched_lost
+    }
+@app.post("/upload_live_feed")
+async def upload_live_feed(
+    camera_id: str = Form(...),
+    where_found: str = Form(...),  # Renamed from location
+    location: str = Form(...),
+    your_name: str = Form(...),
+    organization: str = Form(...),
+    designation: str = Form(...),
+    user_id: str = Form(...),
+    mobile_no: str = Form(...),
+    email_id: str = Form(...),
+    file: UploadFile = File(...)
+):
+    contents = await file.read()
+    image = cv2.imdecode(np.frombuffer(contents, np.uint8), cv2.IMREAD_COLOR)
+
+    results = face_model.predict(image, verbose=False)
+    if not results or not results[0].boxes or results[0].boxes.xyxy.shape[0] == 0:
+        return JSONResponse(status_code=400, content={"error": "No faces detected"})
+
+    boxes = results[0].boxes.xyxy.cpu().numpy().astype(int)
+    faces = []
+    matches = []
+
+    for i, box in enumerate(boxes):
+        x1, y1, x2, y2 = box
+        cropped_face = image[y1:y2, x1:x2]
+        face_id = str(uuid.uuid4())
+        face_path = f"db/live_feed/{face_id}.jpg"
+        cv2.imwrite(face_path, cropped_face)
+
+        # Save face metadata
+        data = {
+            "face_id": face_id,
+            "camera_id": camera_id,
+            "location": location,
+            "where_found": where_found,
+            "your_name": your_name,
+            "organization": organization,
+            "designation": designation,
+            "user_id": user_id,
+            "mobile_no": mobile_no,
+            "email_id": email_id,
+            "face_path": face_path,
+            "bounding_box": {"x1": int(x1), "y1": int(y1), "x2": int(x2), "y2": int(y2)},
+        }
+        save_metadata(face_id, data, "db/live_feed")
+
+        # Match with existing records
+        matched = match_face_with_db(face_path, "db/lost", data)
+        if matched:
+            matches.append(matched)
+
+    return {"message": "Live feed uploaded", "matches": matches}
+from fastapi import Path
+
+# Endpoint to get records by user_id
+@app.get("/get_records_by_user/{user_id}")
+async def get_records_by_user(user_id: str):
+    # Search for records in the lost, found, and live_feed folders
+    records = []
+
+    # Search in the lost folder
+    for file in os.listdir("db/lost"):
+        if not file.endswith(".json"):
+            continue
+        with open(f"db/lost/{file}", "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+            if metadata.get("user_id") == user_id:
+                records.append({"folder": "lost", "metadata": metadata})
+
+    # Search in the found folder
+    for file in os.listdir("db/found"):
+        if not file.endswith(".json"):
+            continue
+        with open(f"db/found/{file}", "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+            if metadata.get("user_id") == user_id:
+                records.append({"folder": "found", "metadata": metadata})
+
+    # Search in the live_feed folder
+    for file in os.listdir("db/live_feed"):
+        if not file.endswith(".json"):
+            continue
+        with open(f"db/live_feed/{file}", "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+            if metadata.get("user_id") == user_id:
+                records.append({"folder": "live_feed", "metadata": metadata})
+
+    if not records:
+        return JSONResponse(status_code=404, content={"message": "No records found for the given user_id"})
+
+    return {"message": "Records found", "records": records}
+
+
+# Endpoint to search for a specific face by face_id
+@app.get("/search_face/{face_id}")
+async def search_face(face_id: str):
+    matched_records = []
+
+    # Check in the lost folder
+    for file in os.listdir("db/lost"):
+        if not file.endswith(".json"):
+            continue
+        with open(f"db/lost/{file}", "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+            if metadata.get("face_id") == face_id:
+                matched_records.append({"folder": "lost", "metadata": metadata})
+
+    # Check in the found folder
+    for file in os.listdir("db/found"):
+        if not file.endswith(".json"):
+            continue
+        with open(f"db/found/{file}", "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+            if metadata.get("face_id") == face_id:
+                matched_records.append({"folder": "found", "metadata": metadata})
+
+    # Check in the live_feed folder
+    for file in os.listdir("db/live_feed"):
+        if not file.endswith(".json"):
+            continue
+        with open(f"db/live_feed/{file}", "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+            if metadata.get("face_id") == face_id:
+                matched_records.append({"folder": "live_feed", "metadata": metadata})
+
+    if not matched_records:
+        return JSONResponse(status_code=404, content={"message": "No records found for the given face_id"})
+
+    return {"message": "Face records found", "records": matched_records}
+
+if _name_ == "_main_":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

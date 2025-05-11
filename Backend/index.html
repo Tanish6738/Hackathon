@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .image-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .image-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            width: 300px;
+        }
+        .image-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .image-card .metadata {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Face Recognition API Tester</h1>
+
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'uploadLost')">Upload Lost Person</button>
+        <button class="tablinks" onclick="openTab(event, 'uploadFound')">Upload Found Person</button>
+        <button class="tablinks" onclick="openTab(event, 'uploadLiveFeed')">Upload Live Feed</button>
+        <button class="tablinks" onclick="openTab(event, 'getRecords')">Get Records by User</button>
+        <button class="tablinks" onclick="openTab(event, 'searchFace')">Search Face</button>
+    </div>
+
+    <div id="uploadLost" class="tabcontent show">
+        <h2>Upload Lost Person</h2>
+        <form id="lostForm">
+            <div>
+                <label for="lostName">Name:</label>
+                <input type="text" id="lostName" name="name" required>
+            </div>
+            <div>
+                <label for="lostGender">Gender:</label>
+                <select id="lostGender" name="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="lostAge">Age:</label>
+                <input type="number" id="lostAge" name="age" required>
+            </div>
+            <div>
+                <label for="lostWhereLost">Where Lost:</label>
+                <input type="text" id="lostWhereLost" name="where_lost" required>
+            </div>
+            <div>
+                <label for="lostYourName">Your Name:</label>
+                <input type="text" id="lostYourName" name="your_name" required>
+            </div>
+            <div>
+                <label for="lostRelation">Relation with Lost:</label>
+                <input type="text" id="lostRelation" name="relation_with_lost" required>
+            </div>
+            <div>
+                <label for="lostUserId">User ID:</label>
+                <input type="text" id="lostUserId" name="user_id" required>
+            </div>
+            <div>
+                <label for="lostMobile">Mobile No:</label>
+                <input type="text" id="lostMobile" name="mobile_no" required>
+            </div>
+            <div>
+                <label for="lostEmail">Email ID:</label>
+                <input type="email" id="lostEmail" name="email_id" required>
+            </div>
+            <div>
+                <label for="lostImage">Image:</label>
+                <input type="file" id="lostImage" name="file" accept="image/*" required>
+            </div>
+            <div>
+                <button type="button" onclick="submitLostForm()">Submit</button>
+            </div>
+        </form>
+        <div id="lostResult" class="result"></div>
+        <div id="lostImageContainer" class="image-container"></div>
+    </div>
+
+    <div id="uploadFound" class="tabcontent">
+        <h2>Upload Found Person</h2>
+        <form id="foundForm">
+            <div>
+                <label for="foundName">Name:</label>
+                <input type="text" id="foundName" name="name" required>
+            </div>
+            <div>
+                <label for="foundGender">Gender:</label>
+                <select id="foundGender" name="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="foundAge">Age:</label>
+                <input type="number" id="foundAge" name="age" required>
+            </div>
+            <div>
+                <label for="foundWhereFound">Where Found:</label>
+                <input type="text" id="foundWhereFound" name="where_found" required>
+            </div>
+            <div>
+                <label for="foundYourName">Your Name:</label>
+                <input type="text" id="foundYourName" name="your_name" required>
+            </div>
+            <div>
+                <label for="foundOrganization">Organization:</label>
+                <input type="text" id="foundOrganization" name="organization" required>
+            </div>
+            <div>
+                <label for="foundDesignation">Designation:</label>
+                <input type="text" id="foundDesignation" name="designation" required>
+            </div>
+            <div>
+                <label for="foundUserId">User ID:</label>
+                <input type="text" id="foundUserId" name="user_id" required>
+            </div>
+            <div>
+                <label for="foundMobile">Mobile No:</label>
+                <input type="text" id="foundMobile" name="mobile_no" required>
+            </div>
+            <div>
+                <label for="foundEmail">Email ID:</label>
+                <input type="email" id="foundEmail" name="email_id" required>
+            </div>
+            <div>
+                <label for="foundImage">Image:</label>
+                <input type="file" id="foundImage" name="file" accept="image/*" required>
+            </div>
+            <div>
+                <button type="button" onclick="submitFoundForm()">Submit</button>
+            </div>
+        </form>
+        <div id="foundResult" class="result"></div>
+        <div id="foundImageContainer" class="image-container"></div>
+    </div>
+
+    <div id="uploadLiveFeed" class="tabcontent">
+        <h2>Upload Live Feed</h2>
+        <form id="liveFeedForm">
+            <div>
+                <label for="liveCameraId">Camera ID:</label>
+                <input type="text" id="liveCameraId" name="camera_id" required>
+            </div>
+            <div>
+                <label for="liveWhereFound">Where Found:</label>
+                <input type="text" id="liveWhereFound" name="where_found" required>
+            </div>
+            <div>
+                <label for="liveLocation">Location:</label>
+                <input type="text" id="liveLocation" name="location" required>
+            </div>
+            <div>
+                <label for="liveYourName">Your Name:</label>
+                <input type="text" id="liveYourName" name="your_name" required>
+            </div>
+            <div>
+                <label for="liveOrganization">Organization:</label>
+                <input type="text" id="liveOrganization" name="organization" required>
+            </div>
+            <div>
+                <label for="liveDesignation">Designation:</label>
+                <input type="text" id="liveDesignation" name="designation" required>
+            </div>
+            <div>
+                <label for="liveUserId">User ID:</label>
+                <input type="text" id="liveUserId" name="user_id" required>
+            </div>
+            <div>
+                <label for="liveMobile">Mobile No:</label>
+                <input type="text" id="liveMobile" name="mobile_no" required>
+            </div>
+            <div>
+                <label for="liveEmail">Email ID:</label>
+                <input type="email" id="liveEmail" name="email_id" required>
+            </div>
+            <div>
+                <label for="liveImage">Image:</label>
+                <input type="file" id="liveImage" name="file" accept="image/*" required>
+            </div>
+            <div>
+                <button type="button" onclick="submitLiveFeedForm()">Submit</button>
+            </div>
+        </form>
+        <div id="liveResult" class="result"></div>
+        <div id="liveImageContainer" class="image-container"></div>
+    </div>
+
+    <div id="getRecords" class="tabcontent">
+        <h2>Get Records by User ID</h2>
+        <form id="recordsForm">
+            <div>
+                <label for="recordsUserId">User ID:</label>
+                <input type="text" id="recordsUserId" name="user_id" required>
+            </div>
+            <div>
+                <button type="button" onclick="getRecordsByUser()">Get Records</button>
+            </div>
+        </form>
+        <div id="recordsResult" class="result"></div>
+        <div id="recordsImageContainer" class="image-container"></div>
+    </div>
+
+    <div id="searchFace" class="tabcontent">
+        <h2>Search Face by Face ID</h2>
+        <form id="searchForm">
+            <div>
+                <label for="searchFaceId">Face ID:</label>
+                <input type="text" id="searchFaceId" name="face_id" required>
+            </div>
+            <div>
+                <button type="button" onclick="searchFaceById()">Search</button>
+            </div>
+        </form>
+        <div id="searchResult" class="result"></div>
+        <div id="searchImageContainer" class="image-container"></div>
+    </div>
+
+    <script>
+        // API base URL - change this to your API endpoint
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // Tab functionality
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Helper function to create form data
+        function createFormData(formId) {
+            const form = document.getElementById(formId);
+            const formData = new FormData();
+
+            // Add all form fields to FormData
+            for (const element of form.elements) {
+                if (element.name && element.name !== 'file') {
+                    formData.append(element.name, element.value);
+                } else if (element.name === 'file' && element.files.length > 0) {
+                    formData.append('file', element.files[0]);
+                }
+            }
+
+            return formData;
+        }
+
+        // Display JSON result
+        function displayResult(resultId, data) {
+            document.getElementById(resultId).textContent = JSON.stringify(data, null, 2);
+        }
+
+        // Display images from blob data
+        function displayImages(containerId, records) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (!records || records.length === 0) return;
+
+            records.forEach(record => {
+                const metadata = record.metadata || record;
+                if (metadata.face_blob) {
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+
+                    const img = document.createElement('img');
+                    img.src = `data:image/jpeg;base64,${metadata.face_blob}`;
+                    img.alt = metadata.name || 'Face image';
+
+                    const metadataDiv = document.createElement('div');
+                    metadataDiv.className = 'metadata';
+
+                    // Display key metadata
+                    const keys = ['face_id', 'name', 'age', 'gender'];
+                    keys.forEach(key => {
+                        if (metadata[key]) {
+                            const p = document.createElement('p');
+                            p.textContent = `${key}: ${metadata[key]}`;
+                            metadataDiv.appendChild(p);
+                        }
+                    });
+
+                    card.appendChild(img);
+                    card.appendChild(metadataDiv);
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        // Submit lost person form
+        async function submitLostForm() {
+            try {
+                const formData = createFormData('lostForm');
+
+                const response = await fetch(`${API_BASE_URL}/upload_lost`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                displayResult('lostResult', data);
+
+                // Display matched records if any
+                if (data.matched_records && data.matched_records.length > 0) {
+                    displayImages('lostImageContainer', data.matched_records);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('lostResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Submit found person form
+        async function submitFoundForm() {
+            try {
+                const formData = createFormData('foundForm');
+
+                const response = await fetch(`${API_BASE_URL}/upload_found`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                displayResult('foundResult', data);
+
+                // Display matched records if any
+                if (data.matched_records && data.matched_records.length > 0) {
+                    displayImages('foundImageContainer', data.matched_records);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('foundResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Submit live feed form
+        async function submitLiveFeedForm() {
+            try {
+                const formData = createFormData('liveFeedForm');
+
+                const response = await fetch(`${API_BASE_URL}/upload_live_feed`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                displayResult('liveResult', data);
+
+                // Display matched records if any
+                if (data.matches && data.matches.length > 0) {
+                    displayImages('liveImageContainer', data.matches);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('liveResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Get records by user ID
+        async function getRecordsByUser() {
+            try {
+                const userId = document.getElementById('recordsUserId').value;
+
+                const response = await fetch(`${API_BASE_URL}/get_records_by_user/${userId}`);
+                const data = await response.json();
+
+                displayResult('recordsResult', data);
+
+                // Display records with images
+                if (data.records && data.records.length > 0) {
+                    displayImages('recordsImageContainer', data.records);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('recordsResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Search face by ID
+        async function searchFaceById() {
+            try {
+                const faceId = document.getElementById('searchFaceId').value;
+
+                const response = await fetch(`${API_BASE_URL}/search_face/${faceId}`);
+                const data = await response.json();
+
+                displayResult('searchResult', data);
+
+                // Display records with images
+                if (data.records && data.records.length > 0) {
+                    displayImages('searchImageContainer', data.records);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('searchResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Initialize the first tab
+        document.getElementById('uploadLost').style.display = 'block';
+    </script>
+</body>
+</html>
