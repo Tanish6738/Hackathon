@@ -44,15 +44,9 @@ This project addresses the problem by developing a Lost & Found system powered b
 
 ---
 
-## 🖼️ Demo
-
-> _Add screenshots or a demo video link here to showcase the UI and workflow._
-
----
-
 ## ⚖️ Comparison with Existing Solutions
 
-| Feature / Factor         | Dhruv AI (Indian Railways)                  | Lost & Found Facial Recognition System (This Project)         |
+| Feature / Factor         | Example (Indian Railways)                  | Dhruv AI (OUR Project)         |
 |-------------------------|---------------------------------------------|--------------------------------------------------------------|
 | **Deployment Area**     | Primarily at railway stations               | Scalable to fairs, festivals, disaster zones, schools, etc.  |
 | **Database Handling**   | Static centralized database                 | Dynamic, live-updated database (edge + cloud)                |
@@ -79,8 +73,7 @@ Backend/
   requirements.txt
   yolov11s-face.pt
   db/
-    admins/
-      Admin.json
+    
 LostAndFoundUpdated 3/
   src/
     app/
@@ -150,17 +143,210 @@ README.md
 
 ## 📦 API & Integration
 
-- Open API endpoints for third-party integration (see `src/components/Documentation/APIEndpoint.tsx`)
-- Example usage and code samples available in the documentation section
+The backend provides a comprehensive RESTful API for lost/found person management, live feed processing, and admin operations. Below are the main endpoints and their typical responses. For full details, see `src/app/DocumentationPage.tsx` and `Backend/Backend.md`.
 
-**Sample Endpoint:**
-```http
-POST /api/found-person
-Content-Type: application/json
+### Lost & Found Endpoints
+
+**POST /upload_lost**
+- Register a lost person with their face image and details.
+- **Form Parameters:** name, gender, age, where_lost, your_name, relation_with_lost, user_id, mobile_no, email_id, file
+- **Response:**
+```json
 {
-  "name": "John Doe",
-  "photo": "base64string...",
-  "location": "Event Hall 3"
+  "message": "Lost person uploaded successfully.",
+  "face_id": "<UUID>",
+  "matched_found_count": 0,
+  "matched_live_count": 0,
+  "matched_records": []
+}
+```
+
+**POST /upload_found**
+- Register a found person with their face image and details.
+- **Form Parameters:** name, gender, age, where_found, your_name, organization, designation, user_id, mobile_no, email_id, file
+- **Response:**
+```json
+{
+  "message": "Found person uploaded successfully.",
+  "face_id": "<UUID>",
+  "matched_lost_count": 0,
+  "matched_records": []
+}
+```
+
+**POST /upload_live_feed**
+- Process a camera feed image to detect faces and match with lost person records.
+- **Form Parameters:** camera_id, where_found, location, your_name, organization, designation, user_id, mobile_no, email_id, file
+- **Response:**
+```json
+{
+  "message": "Live feed uploaded",
+  "matches": []
+}
+```
+
+**GET /get_records_by_user/{user_id}**
+- Retrieve all records (lost, found, live feed) associated with a specific user ID.
+- **Response:**
+```json
+{
+  "message": "Records found",
+  "records": [
+    {
+      "folder": "db/lost",
+      "metadata": {
+        "face_id": "<UUID>",
+        "name": "John Doe",
+        "face_blob": "<base64-encoded-image>"
+      }
+    }
+  ]
+}
+```
+
+**GET /search_face/{face_id}**
+- Search for a specific face record using its face ID.
+- **Response:**
+```json
+{
+  "message": "Face records found",
+  "records": [
+    {
+      "folder": "db/lost",
+      "metadata": {
+        "face_id": "<UUID>",
+        "name": "John Doe",
+        "face_blob": "<base64-encoded-image>"
+      }
+    }
+  ]
+}
+```
+
+### Admin Endpoints
+
+**GET /check_admin_status/{user_id}**
+- Check if a user is an admin and retrieve their role.
+- **Response:**
+```json
+{
+  "is_admin": true,
+  "role": "HeadAdmin",
+  "admin_details": {
+    "user_id": "<user_id>",
+    "full_name": "Admin Name",
+    "email": "admin@example.com",
+    "role": "HeadAdmin",
+    "created_by": "system",
+    "created_at": "2023-05-09T12:00:00"
+  }
+}
+```
+
+**POST /create_admin**
+- Create a new admin user (requires HeadAdmin privileges).
+- **Form Parameters:** user_id, full_name, email, role, creator_id
+- **Response:**
+```json
+{
+  "user_id": "<user_id>",
+  "full_name": "New Admin Name",
+  "email": "newadmin@example.com",
+  "role": "admin",
+  "created_by": "<creator_id>",
+  "created_at": "2023-05-09T12:00:00"
+}
+```
+
+**POST /clerk_create_admin**
+- Create a new admin from Clerk authentication data (requires HeadAdmin privileges).
+- **Form Parameters:** creator_id, role
+- **JSON Body:** id, firstName, lastName, fullName, imageUrl, primaryEmailAddress, primaryPhoneNumber, username
+- **Response:**
+```json
+{
+  "message": "Admin created successfully from Clerk user data",
+  "admin_id": "user_2wcs9sQwBg6igFMeGCO7igFPP5G",
+  "admin_data": {
+    "user_id": "user_2wcs9sQwBg6igFMeGCO7igFPP5G",
+    "full_name": "TANISHQ CHOUHAN",
+    "email": "0808cl221140.ies@ipsacademy.org",
+    "role": "admin",
+    "created_by": "<creator_id>",
+    "created_at": "2025-05-09T14:30:00",
+    "clerk_data": {
+      "imageUrl": "https://img.clerk.com/...",
+      "username": "tanishq40",
+      "primaryPhoneNumber": "+918103942742"
+    }
+  }
+}
+```
+
+**POST /bulk_create_admins**
+- Create multiple admin users at once (requires HeadAdmin privileges).
+- **Form Parameters:** creator_id
+- **JSON Body:** admins (array of admin objects)
+- **Response:**
+```json
+{
+  "message": "Created 2 admins",
+  "created_admins": [
+    {
+      "user_id": "user_123",
+      "full_name": "Admin One",
+      "email": "admin1@example.com",
+      "role": "admin",
+      "created_by": "<creator_id>",
+      "created_at": "2025-05-09T14:30:00"
+    }
+  ],
+  "errors": []
+}
+```
+
+**GET /list_admins?creator_id={creator_id}**
+- List all admin users (requires admin privileges).
+- **Response:**
+```json
+{
+  "admins": [
+    {
+      "user_id": "<user_id>",
+      "full_name": "Admin Name",
+      "email": "admin@example.com",
+      "role": "HeadAdmin",
+      "created_at": "2023-05-09T12:00:00"
+    }
+  ]
+}
+```
+
+**POST /update_admin/{admin_id}**
+- Update an existing admin's details (requires HeadAdmin privileges).
+- **Form Parameters:** user_id, full_name, email, role, creator_id
+- **Response:**
+```json
+{
+  "user_id": "<admin_id>",
+  "full_name": "Updated Name",
+  "email": "updated@example.com",
+  "role": "admin",
+  "created_by": "<original_creator_id>",
+  "created_at": "2023-05-09T12:00:00",
+  "updated_by": "<creator_id>",
+  "updated_at": "2023-05-09T13:00:00"
+}
+```
+
+**DELETE /delete_admin/{admin_id}**
+- Delete an admin user (requires HeadAdmin privileges).
+- **Form Parameters:** creator_id
+- **Response:**
+```json
+{
+  "message": "Admin deleted successfully",
+  "admin_id": "<admin_id>"
 }
 ```
 
@@ -176,21 +362,26 @@ Contributions are welcome! Please open issues or submit pull requests for improv
 
 This project is licensed under the MIT License.
 
----
 
 ## 📬 Contact & Support
 
-For questions, support, or partnership inquiries, please contact the project maintainers.
+For questions, support, or partnership inquiries, please contact us at the emails below:
+
+| Name              | Email                      |
+|-------------------|---------------------------|
+| Krish Bhagat      |   BHAGATkrish65@gmail.com     |
+| Tanishq Chouhan   |   tanishq485@gmail.com      |
+| Krishna Jagtap    |   jagtapkanaha987@gmail.com |
+| Grace Patel       |   gracepatel91@gmail.com    |
 
 ---
 
-## ❓ FAQ
+## 🏁 Conclusion
 
-**Q: Is my data secure?**
-A: Yes, all data is handled with strict privacy and security measures.
+**Dhruv - AI** aspires to be more than just a Lost & Found tool—it is a step toward safer, more connected communities. By combining cutting-edge AI with real-time communication and community participation, we aim to transform how missing individuals are reunited with their loved ones. Your feedback, ideas, and contributions are vital to making this vision a reality.
 
-**Q: Can I deploy this on my own infrastructure?**
-A: Absolutely! The system is designed to be easily deployable on various environments.
+---
 
-**Q: How can I contribute?**
-A: Fork the repo, make your changes, and submit a pull request.
+Thank you for your interest in **Dhruv - AI**!  
+We welcome your feedback and look forward to your contributions.
+
