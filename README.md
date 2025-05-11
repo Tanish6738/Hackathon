@@ -74,7 +74,7 @@ Backend/
   yolov11s-face.pt
   db/
     
-LostAndFoundUpdated 3/
+Frontend/
   src/
     app/
     components/
@@ -124,9 +124,9 @@ README.md
 
 ### Frontend Setup
 
-1. Navigate to the `LostAndFoundUpdated 3/` directory:
+1. Navigate to the `Frontend/` directory:
    ```sh
-   cd "LostAndFoundUpdated 3"
+   cd "Frontend"
    ```
 2. Install dependencies:
    ```sh
