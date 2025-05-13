@@ -49,7 +49,7 @@ const FaceRestoration: React.FC = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulated delay
 
-      const response = await fetch("http://127.0.0.1:8000/restore-face/", {
+      const response = await fetch("https://krish09bha-image-enhancer.hf.space/restore-face/", {
         method: "POST",
         body: formData,
       });

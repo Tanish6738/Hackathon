@@ -42,7 +42,7 @@ const Ageing: React.FC = () => {
     formData.append('target_age', targetAge.toString());
 
     try {
-      const res = await fetch('http://localhost:8000/age-face/', {
+      const res = await fetch('https://krish09bha-face-aging.hf.space/age-face/', {
         method: 'POST',
         body: formData,
       });
