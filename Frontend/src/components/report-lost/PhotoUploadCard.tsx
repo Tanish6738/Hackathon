@@ -103,7 +103,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   }, []);
 
   // Handler for crop complete
-  const handleCropComplete = useCallback((croppedArea: Area, croppedAreaPixelsParam: Area) => {
+  const handleCropComplete = useCallback((_: Area, croppedAreaPixelsParam: Area) => {
     setCroppedAreaPixels(croppedAreaPixelsParam);
   }, []);
   

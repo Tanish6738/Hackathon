@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription } from "./ui/alert"
 
 interface CameraFeedProps {
   onFrame: (blob: Blob) => void
