@@ -11,7 +11,7 @@ import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { searchFaceById,RecordItem } from "../services/api";
+import { searchFaceById, RecordItem } from "../services/api";
 import { Card , CardHeader, CardTitle, CardContent, CardFooter} from "./ui/card";
 import { Badge } from "./ui/badge";
 
@@ -38,12 +38,17 @@ const FaceSearch: React.FC = () => {
     try {
       setLoading(true);
       const response = await searchFaceById(faceId);
-      // Defensive: handle undefined or missing records
-      const records = Array.isArray(response?.records) ? response.records : [];
-      setResults(records);
+      // Normalize backend response: always expect 'records' array
+      let normalizedResults: RecordItem[] = [];
+      if (response && Array.isArray((response as any).records)) {
+        normalizedResults = (response as any).records;
+      } else if (response && response.record) {
+        // If backend returns a single record, wrap it as array
+        normalizedResults = [{ folder: 'unknown', metadata: response.record }];
+      }
+      setResults(normalizedResults);
       setSearched(true);
-
-      if (!records || records.length === 0) {
+      if (!normalizedResults || normalizedResults.length === 0) {
         toast({
           title: "No results",
           description: "No records found for this Face ID",
@@ -51,7 +56,7 @@ const FaceSearch: React.FC = () => {
       } else {
         toast({
           title: "Success",
-          description: `Found ${records.length} record(s)`,
+          description: `Found ${normalizedResults.length} record(s)`,
         });
       }
     } catch (error: any) {

@@ -19,7 +19,6 @@ const AdminFaceSearch: React.FC = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[AdminFaceSearch] handleSearch called with faceId:", faceId);
     if (!faceId.trim()) {
       toast({
         title: "Error",
@@ -33,42 +32,19 @@ const AdminFaceSearch: React.FC = () => {
       setError(null);
       setSearchResults(null);
       const response = await searchFaceById(faceId);
-      console.log("[AdminFaceSearch] API raw response:", response);
-      // Robust normalization for all backend shapes
-      // Use 'any' to avoid TS errors due to backend shape
+      // Normalize backend response: always expect 'records' array
       let normalizedResponse: any = { message: response?.message || '', records: [] };
-      if (response) {
-        // Case 1: {record, source} (single result)
-        if ((response as any).record && (response as any).source) {
-          normalizedResponse.records = [{ folder: `db/${(response as any).source}`, metadata: (response as any).record }];
-        }
-        // Case 2: {records: [...]} (array of results)
-        else if (Array.isArray(response.records)) {
-          normalizedResponse.records = response.records.map((rec: any) => {
-            // If rec is already normalized, keep as is
-            if (rec.folder && rec.metadata) return rec;
-            // If rec has record/source inside, normalize
-            if (rec.record && rec.source) return { folder: `db/${rec.source}`, metadata: rec.record };
-            // If rec is just metadata, try to infer folder from face_path
-            if (rec.face_path) {
-              let folder = rec.face_path.split("\\")[0] || rec.face_path.split("/")[0] || "db/unknown";
-              return { folder, metadata: rec };
-            }
-            return { folder: "db/unknown", metadata: rec };
-          });
-        }
-        // Case 3: {records: {}} (single object)
-        else if (response.records && typeof response.records === 'object') {
-          normalizedResponse.records = [{ folder: (response.records as any).folder || "db/unknown", metadata: response.records }];
-        }
+      if (Array.isArray((response as any).records)) {
+        normalizedResponse.records = (response as any).records;
+      } else if (response && response.record) {
+        normalizedResponse.records = [{ folder: 'unknown', metadata: response.record }];
       }
-      console.log("[AdminFaceSearch] API normalized response:", normalizedResponse);
+      setSearchResults(normalizedResponse);
       if (!normalizedResponse || !Array.isArray(normalizedResponse.records)) {
         setError("Unexpected response from server.");
         setSearchResults(null);
         return;
       }
-      setSearchResults(normalizedResponse);
       if (normalizedResponse.records.length === 0) {
         setError("No records found for this Face ID.");
       } else {
