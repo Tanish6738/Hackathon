@@ -34,7 +34,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ userId }) => {
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/check_admin_status/${userId}`);
+        const response = await fetch(`https://krish09bha-dhruvai.hf.space/check_admin_status/${userId}`);
         const data = await response.json();
         setIsHeadAdmin(data.is_admin && data.role === 'HeadAdmin');
 
@@ -54,7 +54,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ userId }) => {
   // Fetch all admins
   const fetchAdmins = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/list_admins?creator_id=${userId}`);
+      const response = await fetch(`https://krish09bha-dhruvai.hf.space/list_admins?creator_id=${userId}`);
       const data = await response.json();
       setAdmins(data.admins || []);
     } catch (error) {
@@ -84,7 +84,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ userId }) => {
 
       console.log('Sending admin data:', Object.fromEntries(formData));
       
-      const response = await fetch('http://localhost:8000/create_admin', {
+      const response = await fetch('https://krish09bha-dhruvai.hf.space/create_admin', {
         method: 'POST',
         body: formData,
       });
@@ -141,7 +141,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ userId }) => {
       const formData = new FormData();
       formData.append('creator_id', userId);
 
-      const response = await fetch(`http://localhost:8000/delete_admin/${adminId}`, {
+      const response = await fetch(`https://krish09bha-dhruvai.hf.space/delete_admin/${adminId}`, {
         method: 'DELETE',
         body: formData,
       });

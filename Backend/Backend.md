@@ -511,20 +511,20 @@ Or using uvicorn directly:
 uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The API will be available at http://localhost:8000/
+The API will be available at https://krish09bha-dhruvai.hf.space/
 
 ## API Documentation
 
 FastAPI provides automatic API documentation at:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+- Swagger UI: https://krish09bha-dhruvai.hf.space/docs
+- ReDoc: https://krish09bha-dhruvai.hf.space/redoc
 
 ## Example Usage
 
 ### Reporting a Lost Person
 
 ```bash
-curl -X POST "http://localhost:8000/upload_lost" \
+curl -X POST "https://krish09bha-dhruvai.hf.space/upload_lost" \
   -F "name=John Smith" \
   -F "gender=male" \
   -F "age=25" \
@@ -540,7 +540,7 @@ curl -X POST "http://localhost:8000/upload_lost" \
 ### Reporting a Found Person
 
 ```bash
-curl -X POST "http://localhost:8000/upload_found" \
+curl -X POST "https://krish09bha-dhruvai.hf.space/upload_found" \
   -F "name=Unknown Person" \
   -F "gender=male" \
   -F "age=25" \
@@ -557,7 +557,7 @@ curl -X POST "http://localhost:8000/upload_found" \
 ### Creating a New Admin
 
 ```bash
-curl -X POST "http://localhost:8000/create_admin" \
+curl -X POST "https://krish09bha-dhruvai.hf.space/create_admin" \
   -F "user_id=new_admin_123" \
   -F "full_name=John Admin" \
   -F "email=john@admin.com" \
@@ -568,7 +568,7 @@ curl -X POST "http://localhost:8000/create_admin" \
 ### Checking Admin Status
 
 ```bash
-curl -X GET "http://localhost:8000/check_admin_status/admin_user_id"
+curl -X GET "https://krish09bha-dhruvai.hf.space/check_admin_status/admin_user_id"
 ```
 
 ## License
@@ -594,8 +594,8 @@ This section provides a comprehensive guide for testing the API endpoints using 
    - Name it "Local Development"
    - Add a variable:
      - Name: `base_url`
-     - Initial value: `http://localhost:8000`
-     - Current value: `http://localhost:8000`
+     - Initial value: `https://krish09bha-dhruvai.hf.space`
+     - Current value: `https://krish09bha-dhruvai.hf.space`
    - Click "Save"
    - Select the "Local Development" environment from the dropdown menu in the top-right corner
 

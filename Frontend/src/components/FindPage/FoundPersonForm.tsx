@@ -1,4 +1,5 @@
 import React from 'react';
+import { reportFoundPerson } from '../../services/api';
 
 interface FoundPersonFormProps {
   found: any;
@@ -50,17 +51,9 @@ const FoundPersonForm: React.FC<FoundPersonFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    Object.entries(found).forEach(([key, value]) => {
-      if (key === 'file' && value) formData.append('file', value as File);
-      else if (key !== 'file') formData.append(key, value as string);
-    });
     try {
-      const response = await fetch('http://localhost:8000/upload_found', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
+      // Use the centralized API function
+      const data = await reportFoundPerson(found);
       setApiResponse(data);
       setMessage(data.message || JSON.stringify(data));
     } catch (error: any) {

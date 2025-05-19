@@ -110,7 +110,7 @@ export default function OverviewTab() {
           <div>
             <h3 className="text-lg font-medium mb-2">3. Access the web interface</h3>
             <p className="text-gray-600 mb-2">Open your browser and navigate to:</p>
-            <CodeBlock language="text" code={`http://localhost:8000`} />
+            <CodeBlock language="text" code={`https://krish09bha-dhruvai.hf.space`} />
           </div>
         </div>
       </section>

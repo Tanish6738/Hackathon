@@ -1,4 +1,5 @@
 import React from 'react';
+import { reportLostPerson } from '../../services/api';
 
 interface LostPersonFormProps {
   lost: any;
@@ -48,17 +49,9 @@ const LostPersonForm: React.FC<LostPersonFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    Object.entries(lost).forEach(([key, value]) => {
-      if (key === 'file' && value) formData.append('file', value as File);
-      else if (key !== 'file') formData.append(key, value as string);
-    });
     try {
-      const response = await fetch('http://localhost:8000/upload_lost', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
+      // Use the centralized API function
+      const data = await reportLostPerson(lost);
       setApiResponse(data);
       setMessage(data.message || JSON.stringify(data));
     } catch (error: any) {

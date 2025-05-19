@@ -22,7 +22,7 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/check_admin_status/${userId}`);
+        const response = await fetch(`https://krish09bha-dhruvai.hf.space/check_admin_status/${userId}`);
         const data = await response.json();
         setIsHeadAdmin(data.is_admin && data.role === "HeadAdmin");
       } catch (error) {

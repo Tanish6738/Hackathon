@@ -289,7 +289,7 @@ export default function DocumentationPage() {
                     <div>
                       <h3 className="text-lg font-semibold mb-2">3. Access the web interface</h3>
                       <p className="text-gray-700 mb-2">Open your browser and navigate to:</p>
-                      <CodeBlock language="text" code={`http://localhost:8000`} />
+                      <CodeBlock language="text" code={`https://krish09bha-dhruvai.hf.space`} />
                     </div>
                   </div>
                 </div>
@@ -1337,7 +1337,7 @@ pip install -r requirements.txt`}
                       <h4 className="font-semibold mb-2">4. Start the Application</h4>
                       <CodeBlock language="bash" code={`uvicorn app.main:app --reload`} />
                       <p className="text-sm text-gray-600 mt-2">
-                        The application will be available at http://localhost:8000
+                        The application will be available at https://krish09bha-dhruvai.hf.space
                       </p>
                     </div>
                   </CardContent>
@@ -1358,7 +1358,7 @@ pip install -r requirements.txt`}
                       <h4 className="font-semibold mb-2">2. Run the Docker Container</h4>
                       <CodeBlock language="bash" code={`docker run -d -p 8000:8000 --name dhruv-ai dhruv-ai:latest`} />
                       <p className="text-sm text-gray-600 mt-2">
-                        The application will be available at http://localhost:8000
+                        The application will be available at https://krish09bha-dhruvai.hf.space
                       </p>
                     </div>
 

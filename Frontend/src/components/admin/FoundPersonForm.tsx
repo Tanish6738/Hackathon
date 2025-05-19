@@ -232,46 +232,35 @@ const FoundPersonForm: React.FC<FoundPersonFormProps> = ({ userId, onSubmitSucce
     setRawImage(null);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file) {
-      toast({
-        title: "Error",
-        description: "Please select an image file",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    setLoading(true);
     try {
-      setLoading(true);
-      
-      console.log("Starting found person report submission");
-      // Use the API service function instead of direct fetch
-      const data = await reportFoundPerson({
-        name: formData.name,
-        gender: formData.gender,
-        age: parseInt(formData.age || "0"),
-        where_found: formData.where_found,
-        your_name: formData.your_name,
-        organization: formData.organization,
-        designation: formData.designation,
+      if (!file) {
+        toast({
+          title: 'Error',
+          description: 'Please upload and crop a photo before submitting.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
+      // Prepare FormData for API
+      const payload = {
+        ...formData,
+        age: Number(formData.age), // Ensure age is a number
+        file: file as File, // Ensure type is File
         user_id: userId,
-        mobile_no: formData.mobile_no,
-        email_id: formData.email_id,
-        file: file
-      });
-      
-      console.log("Found person report submitted successfully:", data);
-      // Call the success handler with the response data
+      };
+      const data = await reportFoundPerson(payload);
       onSubmitSuccess(data);
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to submit found person report",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to submit found person report',
+        variant: 'destructive',
       });
-      console.error("Error submitting found person report:", error);
+      console.error('Error submitting found person report:', error);
     } finally {
       setLoading(false);
     }

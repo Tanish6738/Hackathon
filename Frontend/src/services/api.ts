@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000"; // Replace with your actual API URL
+const API_URL = "https://krish09bha-dhruvai.hf.space"; // Updated to actual API URL from documentation
 
 export interface LostPersonData {
   name: string;
@@ -93,58 +93,52 @@ export interface RecordsResponse {
 
 export interface LostPersonResponse {
   message: string;
-  face_id: string;
-  matched_found_count: number;
-  matched_live_count: number;
-  matched_records: MatchedRecord[];
+  matched_found: any[]; // Array of matched found person records
 }
 
 export interface FoundPersonResponse {
   message: string;
-  face_id: string;
-  matched_lost_count: number;
-  matched_records: MatchedRecord[];
-}
-
-export interface FaceSearchResponse {
-  message: string;
-  records: RecordItem[];
+  matched_lost: any[]; // Array of matched lost person records
 }
 
 export interface LiveFeedResponse {
   message: string;
-  matches: MatchedRecord[];
+  metadata: any; // Metadata object as per API docs
 }
 
-export const getRecordsByUser = async (userId: string): Promise<RecordsResponse> => {
+export interface FaceSearchResponse {
+  message: string;
+  record?: any; // Single record object if found
+}
+
+export const getRecordsByUser = async (userId: string): Promise<any> => {
   if (!userId) {
     return { message: "No user ID provided", records: [] };
   }
   const response = await fetch(`${API_URL}/get_records_by_user/${userId}`);
-  
   if (!response.ok) {
     throw new Error("Failed to fetch records");
   }
-  const data = await response.json();
-  console.log('getRecordsByUser response:', data);
-  return data;
+  return response.json();
 };
 
 export const reportLostPerson = async (data: LostPersonData): Promise<LostPersonResponse> => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    formData.append(key, value.toString());
+    if (key === 'file') {
+      formData.append('file', value);
+    } else {
+      formData.append(key, value.toString());
+    }
   });
-
   const response = await fetch(`${API_URL}/upload_lost`, {
     method: "POST",
     body: formData,
   });
-
   if (!response.ok) {
-    throw new Error("Failed to submit lost person report");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to submit lost person report");
   }
-
   return response.json();
 };
 
@@ -157,69 +151,46 @@ export const reportFoundPerson = async (data: FoundPersonData): Promise<FoundPer
       formData.append(key, value.toString());
     }
   });
-
-  try {
-    console.log("Submitting found person data:", Object.fromEntries(formData.entries()));
-    const response = await fetch(`${API_URL}/upload_found`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || "Failed to submit found person report");
-    }
-
-    const result = await response.json();
-    console.log("Found person response:", result);
-    return result;
-  } catch (error) {
-    console.error("Error in reportFoundPerson:", error);
-    throw error;
+  const response = await fetch(`${API_URL}/upload_found`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to submit found person report");
   }
+  return response.json();
 };
 
 export const submitLiveFeed = async (data: LiveFeedData): Promise<LiveFeedResponse> => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    if (key !== 'file') {
+    if (key === 'file') {
+      formData.append('file', value, 'frame.jpg');
+    } else {
       formData.append(key, value.toString());
     }
   });
-  formData.append('file', data.file, 'frame.jpg');
-
   const response = await fetch(`${API_URL}/upload_live_feed`, {
     method: "POST",
     body: formData,
   });
-
   if (!response.ok) {
-    throw new Error("Failed to submit live feed frame");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to submit live feed frame");
   }
-
   return response.json();
 };
 
 export const searchFaceById = async (faceId: string): Promise<FaceSearchResponse> => {
-  console.log('[api.ts] searchFaceById called with faceId:', faceId);
   const response = await fetch(`${API_URL}/search_face/${faceId}`);
   if (!response.ok) {
-    // Try to parse error message from backend, fallback to generic
     let errorMsg = "Failed to search for face";
     try {
       const err = await response.json();
       errorMsg = err.detail || errorMsg;
-      console.error('[api.ts] searchFaceById error response:', err);
-    } catch (e) {
-      console.error('[api.ts] searchFaceById error parsing error response:', e);
-    }
+    } catch (e) {}
     throw new Error(errorMsg);
   }
-  const data = await response.json();
-  console.log('[api.ts] searchFaceById success response:', data);
-  // Defensive: always return an object with records as an array
-  return {
-    message: data.message || '',
-    records: Array.isArray(data.records) ? data.records : [],
-  };
+  return response.json();
 };

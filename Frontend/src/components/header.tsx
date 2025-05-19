@@ -42,7 +42,7 @@ export default function Header() {
       if (!user) return;
       
       try {
-        const response = await fetch(`http://localhost:8000/check_admin_status/${user.id}`);
+        const response = await fetch(`https://krish09bha-dhruvai.hf.space/check_admin_status/${user.id}`);
         const data = await response.json();
         setIsAdmin(data.is_admin);
       } catch (error) {

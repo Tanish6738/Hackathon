@@ -10,7 +10,7 @@ import { Input } from "../ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 
 // API base URL
-const API_URL = "http://localhost:8000";
+const API_URL = "https://krish09bha-dhruvai.hf.space";
 
 interface LiveFeedProps {
   userId: string;

@@ -60,7 +60,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ userId, onSubmitSuccess }) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/upload_lost`, {
+      const response = await fetch(`https://krish09bha-dhruvai.hf.space/upload_lost`, {
         method: "POST",
         body: createFormData(),
       });

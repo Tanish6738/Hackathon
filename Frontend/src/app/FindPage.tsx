@@ -89,10 +89,15 @@ const FindPage = () => {
 
   const handleGetRecordsByUser = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/get_records_by_user/${recordsUserId}`);
+      const response = await fetch(`https://krish09bha-dhruvai.hf.space/get_records_by_user/${recordsUserId}`);
       const data = await response.json();
       setRecordsResponse(data);
-      setRecordsImages(data.records || []);
+      // Extract array of data objects for ImageCardList
+      if (Array.isArray(data.records)) {
+        setRecordsImages(data.records.map((rec: any) => rec.data));
+      } else {
+        setRecordsImages([]);
+      }
     } catch (error) {
       setRecordsResponse({ error: error instanceof Error ? error.message : 'An unknown error occurred.' });
       setRecordsImages([]);
@@ -101,10 +106,15 @@ const FindPage = () => {
 
   const handleSearchFace = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/search_face/${faceId}`);
+      const response = await fetch(`https://krish09bha-dhruvai.hf.space/search_face/${faceId}`);
       const data = await response.json();
       setApiResponse(data);
-      setSearchFaceImages(data.records || []);
+      // The backend returns a single record or error; wrap in array for ImageCardList
+      if (data.record) {
+        setSearchFaceImages([data.record]);
+      } else {
+        setSearchFaceImages([]);
+      }
       setMessage(data.message || JSON.stringify(data));
     } catch (error) {
       setApiResponse({ error: error instanceof Error ? error.message : 'An unknown error occurred.' });

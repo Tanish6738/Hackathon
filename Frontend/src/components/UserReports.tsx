@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReportDetailsModal from "./ReportDetailsModal";
-import { Loader2, User, File,  } from "lucide-react";
+import { Loader2, User, File } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { getRecordsByUser } from "../services/api";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "./ui/card";
@@ -25,25 +25,18 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
       try {
         setLoading(true);
         const data = await getRecordsByUser(userId);
-        // Defensive: handle both new and legacy API responses
         if (Array.isArray(data.records)) {
           const lost: any[] = [];
           const found: any[] = [];
           data.records.forEach((rec: any) => {
-            if (rec.folder && rec.metadata) {
-              if (rec.folder.includes('lost')) {
-                lost.push(rec); // push full record
-              } else if (rec.folder.includes('found')) {
-                found.push(rec); // push full record
-              }
+            if (rec.source === 'lost_people' && rec.data) {
+              lost.push(rec.data);
+            } else if (rec.source === 'found_people' && rec.data) {
+              found.push(rec.data);
             }
           });
           setLostRecords(lost);
           setFoundRecords(found);
-        } else if (Array.isArray((data as any).lost_records) || Array.isArray((data as any).found_records)) {
-          // For legacy API, wrap metadata in a record-like object
-          setLostRecords(((data as any).lost_records || []).map((meta: any) => ({ folder: 'db/lost', metadata: meta })));
-          setFoundRecords(((data as any).found_records || []).map((meta: any) => ({ folder: 'db/found', metadata: meta })));
         } else {
           setLostRecords([]);
           setFoundRecords([]);
@@ -100,9 +93,8 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
   };
 
   // Render a card for a lost record
-  const renderLostCard = (record: any) => {
-    if (!record || !record.metadata) return null;
-    const meta = record.metadata;
+  const renderLostCard = (meta: any) => {
+    if (!meta) return null;
     return (
       <Card key={meta.face_id} className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary/50">
         <CardHeader className="p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b">
@@ -140,7 +132,7 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
             variant="outline" 
             size="sm" 
             className="w-full text-xs"
-            onClick={() => handleViewDetails(record)}
+            onClick={() => handleViewDetails(meta)}
           >
             View Details
           </Button>
@@ -150,9 +142,8 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
   };
 
   // Render a card for a found record
-  const renderFoundCard = (record: any) => {
-    if (!record || !record.metadata) return null;
-    const meta = record.metadata;
+  const renderFoundCard = (meta: any) => {
+    if (!meta) return null;
     return (
       <Card key={meta.face_id} className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary/50">
         <CardHeader className="p-4 bg-gradient-to-r from-gray-50 to-green-50 border-b">
@@ -190,7 +181,7 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
             variant="outline" 
             size="sm" 
             className="w-full text-xs"
-            onClick={() => handleViewDetails(record)}
+            onClick={() => handleViewDetails(meta)}
           >
             View Details
           </Button>

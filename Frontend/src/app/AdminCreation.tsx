@@ -27,7 +27,7 @@ const AdminRegistration = () => {
     setLoading(true);
     setMessage("");
     try {
-      const response = await fetch("http://localhost:8000/create_admin", {
+      const response = await fetch("https://krish09bha-dhruvai.hf.space/create_admin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)

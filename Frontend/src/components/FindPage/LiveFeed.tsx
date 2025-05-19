@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { submitLiveFeed } from '../../services/api';
 
 interface LiveFeedProps {
   userName: string;
@@ -102,17 +103,17 @@ const LiveFeed: React.FC<LiveFeedProps> = ({
 
   const handleLiveFeedSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    Object.entries(liveFeed).forEach(([key, value]) => {
-      if (key === 'file' && value) formData.append('file', value as File);
-      else if (key !== 'file') formData.append(key, value as string);
-    });
     try {
-      const response = await fetch('http://localhost:8000/upload_live_feed', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
+      if (!liveFeed.file) {
+        setMessage('Please upload a snapshot from the camera.');
+        return;
+      }
+      // Prepare payload with file as Blob (not null)
+      const payload = {
+        ...liveFeed,
+        file: liveFeed.file as Blob,
+      };
+      const data = await submitLiveFeed(payload);
       setApiResponse(data);
       setMessage(data.message || JSON.stringify(data));
     } catch (error: any) {
