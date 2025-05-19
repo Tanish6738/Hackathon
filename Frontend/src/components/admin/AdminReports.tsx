@@ -86,7 +86,7 @@ const AdminReports: React.FC<AdminReportsProps> = ({ userId }) => {
     <div>
       <h2 className="text-xl font-semibold mb-4">All Reports in System</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.records.map((record, index) => (
+        {data.records.map((record: any, index: number) => (
           <Card key={index} className="overflow-hidden hover:shadow-md transition-shadow">
             <CardContent className="p-0">
               <div className="relative">
