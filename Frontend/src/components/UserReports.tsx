@@ -53,7 +53,7 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
       }
     };
     fetchRecords();
-  }, [userId, toast]);  const handleViewDetails = (metadata: any, type: "lost" | "found") => {
+  }, [userId, toast]); const handleViewDetails = (metadata: any, type: "lost" | "found") => {
     // Transform the metadata into the expected RecordItem format
     const recordItem = {
       folder: type === "lost" ? "db/lost" : "db/found",
@@ -110,9 +110,9 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
         <CardContent className="p-0">
           <div className="aspect-square overflow-hidden relative">
             {meta.face_blob ? (
-              <img 
-                src={`data:image/jpeg;base64,${meta.face_blob}`} 
-                alt={meta.name || "Unknown"} 
+              <img
+                src={`data:image/jpeg;base64,${meta.face_blob}`}
+                alt={meta.name || "Unknown"}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -130,9 +130,9 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
             <div><b>Face ID:</b> {meta.face_id}</div>
           </div>        </CardContent>
         <CardFooter className="p-3 bg-gray-50 border-t">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="w-full text-xs"
             onClick={() => handleViewDetails(meta, "lost")}
           >
@@ -158,9 +158,9 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
         <CardContent className="p-0">
           <div className="aspect-square overflow-hidden relative">
             {meta.face_blob ? (
-              <img 
-                src={`data:image/jpeg;base64,${meta.face_blob}`} 
-                alt={meta.name || "Unknown"} 
+              <img
+                src={`data:image/jpeg;base64,${meta.face_blob}`}
+                alt={meta.name || "Unknown"}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -177,11 +177,11 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
             <div><b>Gender:</b> {meta.gender}</div>
             <div><b>Face ID:</b> {meta.face_id}</div>
           </div>
-        </CardContent>
-        <CardFooter className="p-3 bg-gray-50 border-t">
-          <Button 
-            variant="outline" 
-            size="sm"            className="w-full text-xs"
+        </CardContent>        <CardFooter className="p-3 bg-gray-50 border-t">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs"
             onClick={() => handleViewDetails(meta, "found")}
           >
             View Details
@@ -225,13 +225,13 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
           </div>
         )}
       </div>
-      <ReportDetailsModal 
-        record={selectedRecord} 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
+      <ReportDetailsModal
+        record={selectedRecord}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
       />
     </div>
   );
-}; 
+};
 
 export default UserReports;
