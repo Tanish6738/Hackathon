@@ -4,6 +4,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import UserReports from "./UserReports";
 import ReportLost from "./ReportLost";
 import FaceSearch from "./FaceSearch";
+// Import admin components for use in user dashboard
+import LiveFeed from "./admin/LiveFeed";
+import FoundPersonForm from "./admin/FoundPersonForm";
+import FoundPersonResultDisplay from "./admin/FoundPersonResultDisplay";
 import { useUser } from "@clerk/clerk-react";
 import { Menu } from "lucide-react";
 
@@ -12,10 +16,19 @@ const Dashboard: React.FC = () => {
   const userId = user?.id || "";
   const [activeTab, setActiveTab] = useState("reports");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [foundPersonResponse, setFoundPersonResponse] = useState<any>(null);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     setMobileMenuOpen(false);
+  };
+
+  const handleFoundPersonSubmitSuccess = (data: any) => {
+    setFoundPersonResponse(data);
+  };
+
+  const handleReportAnotherFoundPerson = () => {
+    setFoundPersonResponse(null);
   };
 
   return (
@@ -44,9 +57,11 @@ const Dashboard: React.FC = () => {
           >
             {/* Desktop navigation */}
             <TabsList className="hidden md:flex px-0 sm:px-4 w-full mb-4 items-center justify-between border-b bg-transparent">
-              <TabsTrigger className="bg-black text-white hover:cursor-pointer w-1/3 text-center rounded-none py-2" value="reports">Your Reports</TabsTrigger>
-              <TabsTrigger className="bg-black text-white hover:cursor-pointer w-1/3 text-center rounded-none py-2" value="report-lost">Report Lost Person</TabsTrigger>
-              <TabsTrigger className="bg-black text-white hover:cursor-pointer w-1/3 text-center rounded-none py-2" value="face-search">Search by Face ID</TabsTrigger>
+              <TabsTrigger className="bg-black text-white hover:cursor-pointer flex-1 text-center rounded-none py-2" value="reports">Your Reports</TabsTrigger>
+              <TabsTrigger className="bg-black text-white hover:cursor-pointer flex-1 text-center rounded-none py-2" value="report-lost">Report Lost Person</TabsTrigger>
+              <TabsTrigger className="bg-black text-white hover:cursor-pointer flex-1 text-center rounded-none py-2" value="face-search">Search by Face ID</TabsTrigger>
+              <TabsTrigger className="bg-black text-white hover:cursor-pointer flex-1 text-center rounded-none py-2" value="upload-found">Upload Found</TabsTrigger>
+              <TabsTrigger className="bg-black text-white hover:cursor-pointer flex-1 text-center rounded-none py-2" value="live-feed">Live Feed</TabsTrigger>
             </TabsList>
 
             {/* Mobile navigation */}
@@ -70,6 +85,18 @@ const Dashboard: React.FC = () => {
                 >
                   Search by Face ID
                 </button>
+                <button
+                  className={`w-full text-left px-3 py-3 rounded-md font-medium text-base transition-colors border-2 ${activeTab === "upload-found" ? 'bg-gradient-to-r from-blue-600 to-indigo-500 text-white border-blue-700 shadow-md' : 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-transparent hover:bg-blue-50 dark:hover:bg-gray-700'}`}
+                  onClick={() => handleTabChange("upload-found")}
+                >
+                  Upload Found Person
+                </button>
+                <button
+                  className={`w-full text-left px-3 py-3 rounded-md font-medium text-base transition-colors border-2 ${activeTab === "live-feed" ? 'bg-gradient-to-r from-blue-600 to-indigo-500 text-white border-blue-700 shadow-md' : 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-transparent hover:bg-blue-50 dark:hover:bg-gray-700'}`}
+                  onClick={() => handleTabChange("live-feed")}
+                >
+                  Live Feed
+                </button>
               </div>
             </div>
 
@@ -83,6 +110,16 @@ const Dashboard: React.FC = () => {
               </TabsContent>
               <TabsContent value="face-search">
                 <FaceSearch />
+              </TabsContent>
+              <TabsContent value="upload-found">
+                {foundPersonResponse ? (
+                  <FoundPersonResultDisplay response={foundPersonResponse} onReportAnother={handleReportAnotherFoundPerson} />
+                ) : (
+                  <FoundPersonForm userId={userId} onSubmitSuccess={handleFoundPersonSubmitSuccess} />
+                )}
+              </TabsContent>
+              <TabsContent value="live-feed">
+                <LiveFeed userId={userId} />
               </TabsContent>
             </div>
           </Tabs>
