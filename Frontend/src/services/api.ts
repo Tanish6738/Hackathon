@@ -50,16 +50,21 @@ export interface MatchedRecord {
     age: number;
     where_found?: string;
     where_lost?: string;
-    your_name: string;
+    reporter_name: string;
     organization?: string;
     designation?: string;
     relation_with_lost?: string;
     user_id: string;
-    mobile_no: string;
-    email_id: string;
+    contact_details: {
+      mobile_no: string;
+      email_id: string;
+    };
     face_blob: string;
-    face_path: string;
+    face_path?: string;
     emotion?: string;
+    status?: string;
+    upload_time?: string;
+    _id?: string;
   };
   face_path: string;
 }
@@ -73,16 +78,21 @@ export interface RecordItem {
     age: number;
     where_lost?: string;
     where_found?: string;
-    your_name: string;
+    reporter_name: string;
     relation_with_lost?: string;
     organization?: string;
     designation?: string;
     user_id: string;
-    mobile_no: string;
-    email_id: string;
+    contact_details: {
+      mobile_no: string;
+      email_id: string;
+    };
     face_blob: string;
-    face_path: string;
+    face_path?: string;
     emotion?: string;
+    status?: string;
+    upload_time?: string;
+    _id?: string;
   };
 }
 

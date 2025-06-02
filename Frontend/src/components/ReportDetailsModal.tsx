@@ -30,7 +30,7 @@ const copyToClipboard = async (text: string, setCopied: (v: boolean) => void) =>
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1200);
-  } catch {}
+  } catch { }
 };
 
 const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
@@ -41,7 +41,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   const [copiedFaceId, setCopiedFaceId] = useState(false);
 
   if (!record || !record.metadata) return null;
-  
+
   const metadata = record.metadata;
   const folder = record.folder || "";
   const isLost = folder === "db/lost";
@@ -103,9 +103,9 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-4">
           <div className="aspect-square relative flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border shadow-sm">
             {metadata.face_blob ? (
-              <img 
-                src={`data:image/jpeg;base64,${metadata.face_blob}`} 
-                alt={metadata.name || "Unknown"} 
+              <img
+                src={`data:image/jpeg;base64,${metadata.face_blob}`}
+                alt={metadata.name || "Unknown"}
                 className="w-full h-full object-cover rounded-xl border"
               />
             ) : (
@@ -172,14 +172,13 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   </div>
                 )}
               </div>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-blue-500 mt-0.5" />
-                  <div>
-                    <div className="text-xs text-gray-500 font-semibold">Reported by</div>
-                    <div className="break-words text-base text-gray-800">{metadata.your_name || "Unknown"}</div>
-                  </div>
+              <div className="space-y-4">                <div className="flex items-start gap-3">
+                <User className="h-5 w-5 text-blue-500 mt-0.5" />
+                <div>
+                  <div className="text-xs text-gray-500 font-semibold">Reported by</div>
+                  <div className="break-words text-base text-gray-800">{metadata.reporter_name || "Unknown"}</div>
                 </div>
+              </div>
                 {isLost && metadata.relation_with_lost && (
                   <div className="flex items-start gap-3">
                     <User className="h-5 w-5 text-purple-500 mt-0.5" />
@@ -188,35 +187,34 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                       <div className="break-words text-base text-gray-800">{metadata.relation_with_lost}</div>
                     </div>
                   </div>
-                )}
-                <div className="flex items-start gap-3">
+                )}                <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
                     <div className="text-xs text-gray-500 font-semibold">Contact</div>
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-1">
-                        <span className="break-all text-base text-gray-800">{metadata.mobile_no || "N/A"}</span>
-                        {metadata.mobile_no && (
+                        <span className="break-all text-base text-gray-800">{metadata.contact_details?.mobile_no || "N/A"}</span>
+                        {metadata.contact_details?.mobile_no && (
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 p-0"
                             title={copiedFaceId ? 'Copied!' : 'Copy Mobile'}
-                            onClick={() => copyToClipboard(metadata.mobile_no, setCopiedFaceId)}
+                            onClick={() => copyToClipboard(metadata.contact_details?.mobile_no || '', setCopiedFaceId)}
                           >
                             {copiedFaceId ? <CheckIcon className="h-4 w-4 text-green-500" /> : <CopyIcon className="h-4 w-4 text-gray-400" />}
                           </Button>
                         )}
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="break-all text-base text-gray-800">{metadata.email_id || "N/A"}</span>
-                        {metadata.email_id && (
+                        <span className="break-all text-base text-gray-800">{metadata.contact_details?.email_id || "N/A"}</span>
+                        {metadata.contact_details?.email_id && (
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 p-0"
                             title={copiedFaceId ? 'Copied!' : 'Copy Email'}
-                            onClick={() => copyToClipboard(metadata.email_id, setCopiedFaceId)}
+                            onClick={() => copyToClipboard(metadata.contact_details?.email_id || '', setCopiedFaceId)}
                           >
                             {copiedFaceId ? <CheckIcon className="h-4 w-4 text-green-500" /> : <CopyIcon className="h-4 w-4 text-gray-400" />}
                           </Button>
@@ -226,8 +224,7 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   </div>
                 </div>
               </div>
-            </div>
-            {(metadata.organization || metadata.designation) && (
+            </div>            {(metadata.organization || metadata.designation || metadata.status || metadata.upload_time) && (
               <>
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -246,6 +243,24 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                       <div>
                         <div className="text-xs text-gray-500 font-semibold">Designation</div>
                         <div className="break-words text-base text-gray-800">{metadata.designation}</div>
+                      </div>
+                    </div>
+                  )}
+                  {metadata.status && (
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-gray-600 mt-0.5" />
+                      <div>
+                        <div className="text-xs text-gray-500 font-semibold">Status</div>
+                        <div className="break-words text-base text-gray-800 capitalize">{metadata.status}</div>
+                      </div>
+                    </div>
+                  )}
+                  {metadata.upload_time && (
+                    <div className="flex items-start gap-3">
+                      <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
+                      <div>
+                        <div className="text-xs text-gray-500 font-semibold">Upload Time</div>
+                        <div className="break-words text-base text-gray-800">{new Date(metadata.upload_time).toLocaleString()}</div>
                       </div>
                     </div>
                   )}

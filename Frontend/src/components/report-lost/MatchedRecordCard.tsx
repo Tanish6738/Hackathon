@@ -119,7 +119,7 @@ const MatchedRecordCard: React.FC<MatchedRecordCardProps> = ({ match }) => {
                 <User className="h-5 w-5 text-blue-500" />
                 <div className="overflow-hidden">
                   <div className="text-xs text-gray-500">Founder</div>
-                  <div className="text-sm font-medium break-words line-clamp-2">{match.matched_with.your_name || "Unknown"}</div>
+                  <div className="text-sm font-medium break-words line-clamp-2">{match.matched_with.reporter_name || "Unknown"}</div>
                 </div>
               </div>
               
@@ -143,7 +143,7 @@ const MatchedRecordCard: React.FC<MatchedRecordCardProps> = ({ match }) => {
                 <Phone className="h-5 w-5 text-green-600" />
                 <div className="overflow-hidden">
                   <div className="text-xs text-gray-500">Contact</div>
-                  <div className="text-sm font-medium break-words line-clamp-2">{match.matched_with.mobile_no || "Not provided"}</div>
+                  <div className="text-sm font-medium break-words line-clamp-2">{match.matched_with.contact_details?.mobile_no || "Not provided"}</div>
                 </div>
               </div>
               
@@ -151,7 +151,7 @@ const MatchedRecordCard: React.FC<MatchedRecordCardProps> = ({ match }) => {
                 <Mail className="h-5 w-5 text-blue-600" />
                 <div className="overflow-hidden">
                   <div className="text-xs text-gray-500">Email</div>
-                  <div className="text-sm font-medium break-all line-clamp-2">{match.matched_with.email_id || "Not provided"}</div>
+                  <div className="text-sm font-medium break-all line-clamp-2">{match.matched_with.contact_details?.email_id || "Not provided"}</div>
                 </div>
               </div>
             </div>

@@ -254,7 +254,7 @@ const FaceSearch: React.FC = () => {
                                 <UserCheck className="h-5 w-5 text-blue-500 mt-0.5" />
                                 <div>
                                   <div className="text-sm text-gray-500 font-medium">Reported by</div>
-                                  <div className="break-words">{metadata.your_name}</div>
+                                  <div className="break-words">{metadata.reporter_name}</div>
                                 </div>
                               </div>
                               
@@ -272,8 +272,8 @@ const FaceSearch: React.FC = () => {
                                 <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
                                 <div>
                                   <div className="text-sm text-gray-500 font-medium">Contact</div>
-                                  <div className="break-all">{metadata.mobile_no}</div>
-                                  <div className="break-all">{metadata.email_id}</div>
+                                  <div className="break-all">{metadata.contact_details?.mobile_no}</div>
+                                  <div className="break-all">{metadata.contact_details?.email_id}</div>
                                 </div>
                               </div>
                             </div>
