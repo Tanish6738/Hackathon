@@ -53,10 +53,13 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
       }
     };
     fetchRecords();
-  }, [userId, toast]);
-
-  const handleViewDetails = (record: any) => {
-    setSelectedRecord(record);
+  }, [userId, toast]);  const handleViewDetails = (metadata: any, type: "lost" | "found") => {
+    // Transform the metadata into the expected RecordItem format
+    const recordItem = {
+      folder: type === "lost" ? "db/lost" : "db/found",
+      metadata: metadata
+    };
+    setSelectedRecord(recordItem);
     setIsModalOpen(true);
   };
 
@@ -125,14 +128,13 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
             <div><b>Age:</b> {meta.age}</div>
             <div><b>Gender:</b> {meta.gender}</div>
             <div><b>Face ID:</b> {meta.face_id}</div>
-          </div>
-        </CardContent>
+          </div>        </CardContent>
         <CardFooter className="p-3 bg-gray-50 border-t">
           <Button 
             variant="outline" 
             size="sm" 
             className="w-full text-xs"
-            onClick={() => handleViewDetails(meta)}
+            onClick={() => handleViewDetails(meta, "lost")}
           >
             View Details
           </Button>
@@ -179,9 +181,8 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
         <CardFooter className="p-3 bg-gray-50 border-t">
           <Button 
             variant="outline" 
-            size="sm" 
-            className="w-full text-xs"
-            onClick={() => handleViewDetails(meta)}
+            size="sm"            className="w-full text-xs"
+            onClick={() => handleViewDetails(meta, "found")}
           >
             View Details
           </Button>
@@ -231,6 +232,6 @@ const UserReports: React.FC<UserReportsProps> = ({ userId }) => {
       />
     </div>
   );
-};
+}; 
 
 export default UserReports;
