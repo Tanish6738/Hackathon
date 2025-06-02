@@ -48,6 +48,8 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   const isFound = folder === "db/found";
   const isLiveFeed = folder === "db/live_feed";
 
+  console.log(metadata)
+
   const getFolderBadge = (folder: string) => {
     if (folder === "db/lost") {
       return <Badge className="bg-red-500 hover:bg-red-600 flex items-center gap-1 text-white text-xs px-2 py-1 rounded-full shadow-sm"><AlertCircle className="h-3 w-3" /> Lost</Badge>;
